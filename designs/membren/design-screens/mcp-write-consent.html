@@ -1,0 +1,209 @@
+<!-- COMPONENT INVENTORY: consent-screen, memory-card, emotion-badge, source-badge -->
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>membren — MCP write consent and source badge (MEM-6)</title>
+<style>
+/* membren Design Tokens — extracted from designs/design-system.md */
+/* Direction: A — Hearth. Locked 2026-09-20. Mobile-first, light mode only. */
+
+:root {
+  /* ===== Surfaces (backgrounds) ===== */
+  --surface: #f7f6f5;
+  --surface-subtle: #efece9;
+  --surface-raised: #ffffff;
+  --surface-overlay: rgba(43, 36, 32, 0.35);
+
+  /* ===== Ink (text) ===== */
+  --ink: #2b2420;
+  --ink-2: #6b6058;
+  --ink-3: #a39a91;
+  --ink-inverse: #ffffff;
+
+  /* ===== Borders & dividers ===== */
+  --border: #e8e4e0;
+  --border-strong: #d8d2cb;
+  --divider: #eeeae5;
+
+  /* ===== Primary (clay/terracotta — buttons, active nav, capture) ===== */
+  --primary: #a8503a;
+  --primary-strong: #8a4230;
+  --primary-soft-bg: #f6e9e5;
+
+  /* ===== Accent (sage — on-this-day, secondary highlight, exclusively non-action surfaces) ===== */
+  --accent: #6f8267;
+  --accent-strong: #566650;
+  --accent-soft-bg: #eef1ec;
+
+  /* ===== Semantic ===== */
+  --success: #4c7a43;
+  --error: #b3402c;
+  --warning: #b8863a;
+
+  /* ===== Typography ===== */
+  --font-serif: ui-serif, Georgia, "Iowan Old Style", "Times New Roman", serif;
+  --font-sans: system-ui, -apple-system, "Segoe UI", sans-serif;
+
+  /* Type scale — serif carries content (title, memory notes), sans carries UI chrome */
+  --type-title-size: 22px;
+  --type-title-line: 1.3;
+  --type-title-weight: 600;
+  --type-title-tracking: 0;
+
+  --type-note-size: 16px;
+  --type-note-line: 1.55;
+  --type-note-weight: 400;
+  --type-note-tracking: 0;
+
+  --type-body-size: 15px;
+  --type-body-line: 1.5;
+  --type-body-weight: 400;
+  --type-body-tracking: 0;
+
+  --type-label-size: 13px;
+  --type-label-line: 1.3;
+  --type-label-weight: 600;
+  --type-label-tracking: 0;
+
+  --type-caption-size: 12px;
+  --type-caption-line: 1.4;
+  --type-caption-weight: 500;
+  --type-caption-tracking: 0.01em;
+
+  --type-button-size: 15px;
+  --type-button-line: 1.2;
+  --type-button-weight: 600;
+  --type-button-tracking: 0;
+
+  /* ===== Spacing ===== */
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 24px;
+  --space-6: 32px;
+  --space-7: 48px;
+
+  /* ===== Radius (capped — never above --radius-lg) ===== */
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
+  --radius-full: 9999px;
+
+  /* ===== Elevation (hairline ring only — never border + shadow together) ===== */
+  --elevation-card: 0 0 0 1px var(--border);
+  --elevation-panel:
+    0 8px 24px -8px rgba(43, 36, 32, 0.14),
+    0 2px 4px -2px rgba(43, 36, 32, 0.06);
+  --elevation-modal: 0 24px 48px -12px rgba(43, 36, 32, 0.2);
+  --elevation-toast: 0 4px 12px -2px rgba(43, 36, 32, 0.1);
+
+  /* ===== z-index (named scale — never raw 999/9999) ===== */
+  --z-base: 0;
+  --z-sticky: 100;
+  --z-overlay: 800;
+  --z-panel: 900;
+  --z-modal: 1000;
+  --z-toast: 1100;
+  --z-tooltip: 1200;
+
+  /* ===== Motion ===== */
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-in: cubic-bezier(0.4, 0, 1, 1);
+  --ease-in-out: cubic-bezier(0.4, 0, 0.2, 1);
+  --duration-fast: 150ms;
+  --duration-base: 250ms;
+  --duration-slow: 350ms;
+
+  /* ===== Layout ===== */
+  --content-max-width: 540px;
+  --mobile-viewport: 375px;
+
+  /* ===== Layout — desktop (>=1024px) ===== */
+  --desktop-breakpoint: 1024px;
+  --sidebar-width-expanded: 220px;
+  --sidebar-width-collapsed: 72px;
+  --content-max-width-desktop: 640px;
+  --drawer-width: 640px; /* deprecated 2026-09-22 (round 3) — drawer-panel's capture/detail variants replaced by page-panel; see design-system.md §4.17/§4.20 */
+  --page-max-width: 920px;
+  --auth-brand-panel-width: 50%;
+  --auth-form-panel-width: 50%;
+}
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--surface-subtle); font-family: var(--font-sans); color: var(--ink); padding: 24px 16px 48px; }
+h2.cap { font-size: 13px; font-weight: 600; color: var(--ink-2); margin: 0 0 8px; text-transform: none; }
+.board { display: flex; flex-wrap: wrap; gap: 32px; justify-content: center; align-items: flex-start; }
+.frame { width: 375px; max-width: 100%; }
+.screen { background: var(--surface); border: 1px solid var(--border-strong); border-radius: 12px; padding: 24px 20px; min-height: 300px; }
+.note-out { font-size: 12px; color: var(--ink-2); line-height: 1.5; margin: 10px 2px 0; }
+/* consent */
+.auth-card h1 { font-family: var(--font-serif); font-size: 22px; line-height: 1.3; font-weight: 600; margin: 0 0 8px; }
+.sub { color: var(--ink-2); font-size: 14px; line-height: 1.5; margin: 0 0 16px; }
+.auth-card p { font-size: 15px; line-height: 1.5; margin: 0 0 8px; }
+.auth-card ul { margin: 0 0 12px; padding-left: 20px; font-size: 15px; line-height: 1.6; }
+.connect-actions { display: flex; gap: 12px; margin: 16px 0; }
+.btn-primary { flex: 1; min-height: 44px; background: var(--primary); color: var(--ink-inverse); border: 0; border-radius: 10px; font: 600 16px var(--font-sans); }
+.auth-consent { color: var(--ink-3); font-size: 12px; line-height: 1.5; margin: 8px 0 0; }
+.diff { background: var(--primary-soft-bg); border-radius: 8px; padding: 8px 10px; font-size: 13px; color: var(--ink); margin: 0 0 12px; }
+/* cards */
+.memory-card { background: var(--surface-raised); border: 1px solid var(--border); border-radius: 12px; padding: 16px; margin-bottom: 12px; }
+.memory-card .note { font-family: var(--font-serif); font-size: 16px; line-height: 1.55; margin: 0 0 12px; }
+.meta-row { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+.badge-emotion { font-size: 12px; background: var(--accent-soft-bg); color: var(--accent-strong); padding: 3px 10px; border-radius: 999px; font-weight: 500; }
+.badge-source { font-size: 12px; background: var(--surface-subtle); color: var(--ink-2); padding: 3px 10px; border-radius: 999px; font-weight: 500; border: 1px solid var(--border); }
+.entry-time { margin-left: auto; font-size: 12px; color: var(--ink-3); }
+.detail h3 { font-family: var(--font-serif); font-size: 22px; font-weight: 600; margin: 0 0 8px; }
+.detail .note { font-family: var(--font-serif); font-size: 16px; line-height: 1.55; margin: 12px 0; }
+</style>
+</head>
+<body>
+<div class="board">
+
+<div class="frame">
+<h2 class="cap">1 · Consent screen (/#/connect/consent), changed copy only</h2>
+<div class="screen auth-card">
+  <h1>Claude wants to connect to Membren</h1>
+  <p class="sub">Sending you back to <strong>claude.ai</strong> afterwards. Only continue if you started this from that app.</p>
+  <p>If you allow it, Claude can:</p>
+  <ul>
+    <li>Read your private memories (text, feelings, dates, people)</li>
+    <li class="diff" style="list-style:none;margin-left:-20px">Add new memories, edit existing ones, and add people</li>
+  </ul>
+  <p>It cannot delete memories, see photos, or share anything. Memories it adds are marked “Added by Claude”.</p>
+  <div class="connect-actions"><button class="btn-primary">Allow</button><button class="btn-primary">Deny</button></div>
+  <p class="auth-consent">You can disconnect at any time.</p>
+</div>
+<p class="note-out">Highlighted line is the only new content (highlight is for review, not shipped). Allow and Deny stay equal weight, as today. Edit power is stated plainly because it can change memories you wrote.</p>
+</div>
+
+<div class="frame">
+<h2 class="cap">2 · Feed card with source badge</h2>
+<div class="screen">
+  <article class="memory-card">
+    <p class="note">Asked Dad about the monsoon in Kolkata, 1987. He remembers the water reaching the second step.</p>
+    <div class="meta-row"><span class="badge-emotion">🥹 moved</span><span class="badge-source">Added by Claude</span><time class="entry-time">Today</time></div>
+  </article>
+  <article class="memory-card">
+    <p class="note">First steps. Four wobbly ones toward the fence, then straight into my arms.</p>
+    <div class="meta-row"><span class="badge-emotion">😌 relieved</span><time class="entry-time">Yesterday</time></div>
+  </article>
+</div>
+<p class="note-out">Neutral grey chip, after the emotion badges, so the feeling stays the visual lead. App-written memories show nothing. Hand-written memories that Claude edits stay unbadged (edits never change source).</p>
+</div>
+
+<div class="frame">
+<h2 class="cap">3 · Memory detail with source badge</h2>
+<div class="screen detail">
+  <h3>The monsoon of 1987</h3>
+  <div class="meta-row"><span class="badge-emotion">🥹 moved</span><span class="badge-source">Added by Claude</span></div>
+  <p class="note">Asked Dad about the monsoon in Kolkata, 1987. He remembers the water reaching the second step.</p>
+  <div class="meta-row"><time class="entry-time" style="margin-left:0">12 Aug 1987</time></div>
+</div>
+<p class="note-out">Same chip, same position in the badge row as in the feed.</p>
+</div>
+
+</div>
+</body>
+</html>
